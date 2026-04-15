@@ -1,4 +1,4 @@
-MUPDF_LIB = -lmupdf lmupdfthird -lm 
+MUPDF_LIB = -lmupdf -lmupdfthird -lm 
 
 OBJECTS=unixds.o inetds.o soapds.o proto.o pdfds.o 
 
@@ -33,7 +33,7 @@ soapds.o: soapds.c SampleServices.nsmap
 	gcc -g soapds.c -c -o soapds.o -Wall  -l pthread -l gsoap
 
 pdfds.o: pdfds.c proto.h 
-	gcc -g pdfds.c -c -o pdfds.0 -Wall -l pthread -l ${MUPDF_LIB}
+	gcc -g pdfds.c -c -o pdfds.o -Wall -l pthread ${MUPDF_LIB}
 
 SampleServices.nsmap: sclient.h
 	soapcpp2 -S -c -x sclient.h
@@ -41,6 +41,9 @@ SampleServices.nsmap: sclient.h
 inetclient: inetsample2.c proto.o
 	gcc -g inetsample2.c proto.o -Wall -o inetclient
 
+pdfclient: pdfclient.c proto.o 
+	gcc -g pdfclient.c proto.o -Wall -o pdfclient
+	
 clean:
 	rm -f ${OBJECTS} *.nsmap soapC.c soapH.h soapServer.c soapServerLib.c soapStub.h *.xsd *.wsdl
 

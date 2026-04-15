@@ -12,20 +12,21 @@
 void *unix_main (void *args) ;
 void *inet_main (void *args) ;
 void *soap_main (void *args) ;
-
+void *pdf_main (void *args) ;
 // WINDOW *mainwnd ;
 #define UNIXSOCKET "/tmp/unixds"
 #define INETPORT   18081
 #define SOAPPORT   18082
-
+#define PDF_PORT 18083
 pthread_mutex_t curmtx = PTHREAD_MUTEX_INITIALIZER ;
 
 int main () {
-  int iport, sport ;
-
+  int iport, sport, pport ;
+  
   pthread_t unixthr, /* UNIX Thread: the UNIX server component */
 	inetthr,     /* INET Thread: the INET server component */ 
-	soapthr ;     /* SOAP Thread: the SOAP server component */
+	soapthr, 
+  pdfthr;    /* SOAP Thread: the SOAP server component */
 //	workerthr ;  /* The Worker Thread: use it for WORK tasks (various) */
 
 /*
@@ -44,6 +45,9 @@ int main () {
 
   sport = SOAPPORT ;
   pthread_create (&soapthr, NULL, soap_main, &sport) ;
+
+  pport = PDF_PORT;
+  pthread_create(&pdfthr, NULL, pdf_main, &pport);
 /*
   pthread_create (&workerthr, NULL, work_main, NULL) ;
     Implementarea firului de lucru:
@@ -52,10 +56,10 @@ int main () {
 	ar putea utiliza mecanismul 'condition variable': orice cerere noua este semnalata catre firul de lucru 
 		prin acest mecanism.
  */
-  pthread_join (unixthr, NULL) ;
-  pthread_join (inetthr, NULL) ;
-  pthread_join (soapthr, NULL) ;
-
+  pthread_join (unixthr, NULL);
+  pthread_join (inetthr, NULL);
+  pthread_join (soapthr, NULL);
+  pthread_join(pdfthr, NULL);
 /*
   getch () ;
   endwin () ;

@@ -81,11 +81,11 @@ void pdfHandleClient(int sock){
         case OPR_PDF_OPEN_DOC:
             recv(sock, &msg, sizeof(msg), MSG_WAITALL);
             result = pdf_open(msg.fileName);
-            msgHeaderType response;
-            response.msgSize = htonl(sizeof(msgHeaderType) + sizeof(int));
-            response.clientID = msg.header.clientID;
-            response.opID = htonl(OPR_PDF_OPEN_DOC);
-            send(sock, &response, sizeof(msgHeaderType), 0);
+            msgHeaderType resp;
+            resp.msgSize = htonl(sizeof(msgHeaderType) + sizeof(int));
+            resp.clientID = msg.header.clientID;
+            resp.opID = htonl(OPR_PDF_OPEN_DOC);
+            send(sock, &resp, sizeof(msgHeaderType), 0);
             int x = htonl(result);
             send(sock, &x, sizeof(int), 0);
             printf("Send page count: %d", result);
@@ -109,7 +109,7 @@ void pdfHandleClient(int sock){
         }
         
     }
-    cleanup: close(socket);
+    cleanup: close(sock);
     printf("Connection closed");
 }
 
@@ -163,7 +163,7 @@ void pdf_main(void* args){
 
         *pclient = clientSocket;
 
-        if(pthread_create(&threadID, NULL, (void*(*)(void*))pdfHandleClient, pclient) != 0){
+        if(pthread_create(&threadID, NULL, pdfHandleClient, pclient) != 0){
             perror("Thread creation has failed");
             close(clientSocket);
             free(pclient);
@@ -176,7 +176,7 @@ void pdf_main(void* args){
         return NULL;
 }
 
-int main(){
-    return 0;
-}
+// int main(){
+//     return 0;
+// }
 
